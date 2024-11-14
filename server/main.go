@@ -11,9 +11,9 @@ import (
 
 var clients = make(map[net.Conn]bool)
 var mu sync.Mutex
+var PORT = 8080
 
 func main() {
-	PORT := 8080
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%v", PORT))
 	if err != nil {
 		log.Fatalf("failed to listen on port %v: %v\n", PORT, err.Error())

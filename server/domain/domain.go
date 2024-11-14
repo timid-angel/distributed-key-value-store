@@ -13,15 +13,16 @@ func NewDomainError(message string) DomainError {
 }
 
 type IService interface {
-	HandleGet(key string) DomainError
-	HandlePut(key string, value string) DomainError
-	HandleDelete(key string) DomainError
-	HandleList() DomainError
+	Get(key string) DomainError
+	Put(key string, value string) DomainError
+	Delete(key string) DomainError
+	List() DomainError
 }
 
 type IController interface {
-	Get(key string) string
-	Put(key string, value string) string
-	Delete(key string) string
-	List() string
+	HandleRequest(request string) (string, error)
+	HandleGet(key string) (string, error)
+	HandlePut(key string, value string) (string, error)
+	HandleDelete(key string) (string, error)
+	HandleList() (string, error)
 }

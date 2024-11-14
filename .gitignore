@@ -1,0 +1,9 @@
+.vscode/
+
+test_client.go
+*.test.txt
+.env
+
+bin/
+runner*
+*.exe

@@ -45,7 +45,7 @@ func removeClient(conn net.Conn) {
 }
 
 func handleClient(conn net.Conn) {
-	deadlineSeconds := 5
+	deadlineSeconds := 3
 	err := conn.SetDeadline(time.Now().Add(time.Second * time.Duration(deadlineSeconds)))
 	if err != nil {
 		log.Println("failed to set connection deadline:", err)
@@ -55,6 +55,13 @@ func handleClient(conn net.Conn) {
 
 	reader := bufio.NewReader(conn)
 	for {
+		connErr := conn.SetDeadline(time.Now().Add(time.Second * time.Duration(deadlineSeconds)))
+		if connErr != nil {
+			log.Println("failed to set connection deadline:", connErr)
+			removeClient(conn)
+			return
+		}
+
 		message, err := reader.ReadString('\n')
 		if err != nil {
 			fmt.Println("client disconnected:", err)
@@ -62,6 +69,7 @@ func handleClient(conn net.Conn) {
 			return
 		}
 
+		conn.Write([]byte(message))
 		fmt.Print("received:", message)
 	}
 }

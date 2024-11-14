@@ -45,7 +45,7 @@ func removeClient(conn net.Conn) {
 }
 
 func handleClient(conn net.Conn) {
-	deadlineSeconds := 100
+	deadlineSeconds := 5
 	err := conn.SetDeadline(time.Now().Add(time.Second * time.Duration(deadlineSeconds)))
 	if err != nil {
 		log.Println("failed to set connection deadline:", err)
@@ -58,8 +58,10 @@ func handleClient(conn net.Conn) {
 		message, err := reader.ReadString('\n')
 		if err != nil {
 			fmt.Println("client disconnected:", err)
+			conn.Close()
+			return
 		}
 
-		fmt.Println("Received: ", message)
+		fmt.Print("received:", message)
 	}
 }

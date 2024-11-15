@@ -8,7 +8,7 @@ type DomainError struct {
 	message string
 }
 
-func (err *DomainError) Error() string {
+func (err DomainError) Error() string {
 	return err.message
 }
 

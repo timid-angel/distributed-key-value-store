@@ -20,7 +20,7 @@ type IService interface {
 	Get(key string) (string, IDomainError)
 	Put(key string, value string) IDomainError
 	Delete(key string) IDomainError
-	List() ([]string, IDomainError)
+	List() (map[string]string, IDomainError)
 }
 
 type IController interface {

@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"bufio"
+	"distributed-key-value-store/server/domain"
 	"fmt"
 	"log"
 	"net"
@@ -19,7 +20,7 @@ func removeClient(conn net.Conn) {
 	conn.Close()
 }
 
-func handleClient(conn net.Conn) {
+func handleClient(conn net.Conn, controller domain.IController) {
 	deadlineSeconds := 3
 	err := conn.SetDeadline(time.Now().Add(time.Second * time.Duration(deadlineSeconds)))
 	if err != nil {
@@ -44,12 +45,12 @@ func handleClient(conn net.Conn) {
 			return
 		}
 
-		conn.Write([]byte(message))
-		fmt.Print("received:", message)
+		response := controller.HandleRequest(message)
+		conn.Write([]byte(response))
 	}
 }
 
-func InitServer(PORT int) {
+func InitServer(PORT int, controller domain.IController) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%v", PORT))
 	if err != nil {
 		log.Fatalf("failed to listen on port %v: %v\n", PORT, err.Error())
@@ -69,6 +70,6 @@ func InitServer(PORT int) {
 		clients[conn] = true
 		mu.Unlock()
 
-		go handleClient(conn)
+		go handleClient(conn, controller)
 	}
 }

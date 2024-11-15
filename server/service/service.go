@@ -3,8 +3,6 @@ package service
 import (
 	"distributed-key-value-store/server/domain"
 	"fmt"
-	"log"
-	"strings"
 
 	"github.com/gocql/gocql"
 )
@@ -12,6 +10,13 @@ import (
 type Service struct {
 	keyspace string
 	session  *gocql.Session
+}
+
+func NewService(session *gocql.Session, keyspace string) *Service {
+	return &Service{
+		session:  session,
+		keyspace: keyspace,
+	}
 }
 
 func (service *Service) Get(key string) (string, domain.IDomainError) {
@@ -45,17 +50,17 @@ func (service *Service) Delete(key string) domain.IDomainError {
 	return nil
 }
 
-func (service *Service) List() string {
+func (service *Service) List() (map[string]string, domain.IDomainError) {
 	iter := service.session.Query(fmt.Sprintf(`SELECT key, value FROM %v.store`, service.keyspace)).Iter()
-	results := []string{}
+	results := make(map[string]string)
 	var key, value string
 	for iter.Scan(&key, &value) {
-		results = append(results, fmt.Sprintf("%v: %v", key, value))
+		results[key] = value
 	}
 
 	if err := iter.Close(); err != nil {
-		log.Fatalf("failed to fetch all data: %v", err)
+		return results, domain.NewDomainError(fmt.Sprintf("failed to fetch all data: %v", err))
 	}
 
-	return strings.Join(results, "; ")
+	return results, nil
 }

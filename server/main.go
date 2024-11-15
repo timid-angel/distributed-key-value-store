@@ -1,8 +1,16 @@
 package main
 
-import initialize "distributed-key-value-store/server/initialize"
+import (
+	"distributed-key-value-store/server/controller"
+	initialize "distributed-key-value-store/server/initialize"
+	"distributed-key-value-store/server/service"
+)
+
+var KEYSPACE = "key_value_store"
 
 func main() {
-	// initialize.InitServer(8080)
-	initialize.InitCassandraDB("key_value_store")
+	session := initialize.InitCassandraDB(KEYSPACE)
+	service := service.NewService(session, KEYSPACE)
+	controller := controller.NewController(service)
+	initialize.InitServer(8080, controller)
 }

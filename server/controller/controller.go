@@ -15,36 +15,36 @@ func NewController(service domain.IService) domain.IController {
 	return &Controller{service: service}
 }
 
-func (controller *Controller) HandleRequest(request string) (string, error) {
+func (controller *Controller) HandleRequest(request string) string {
 	operations := []string{"get", "put", "delete", "list"}
 	if request == "" {
-		return "", fmt.Errorf("invalid command: only GET, PUT, DELETE and LIST operations are supported")
+		return "invalid command: only GET, PUT, DELETE and LIST operations are supported"
 	}
 
 	parts := strings.Split(request, " ")
 	if len(parts) == 0 {
-		return "", fmt.Errorf("invalid command: only GET, PUT, DELETE and LIST operations are supported")
+		return "invalid command: only GET, PUT, DELETE and LIST operations are supported"
 	}
 
 	operation := strings.ToLower(parts[0])
 	if !slices.Contains(operations, operation) {
-		return "", fmt.Errorf("invalid command: only GET, PUT, DELETE and LIST operations are supported")
+		return "invalid command: only GET, PUT, DELETE and LIST operations are supported"
 	}
 
 	if operation == "get" && len(parts) != 2 {
-		return "", fmt.Errorf("invalid command: get requests must have the following syntax: `GET <KEY>`")
+		return "invalid command: get requests must have the following syntax: `GET <KEY>`"
 	}
 
 	if operation == "delete" && len(parts) != 2 {
-		return "", fmt.Errorf("invalid command: delete requests must have the following syntax: `DELETE <KEY>`")
+		return "invalid command: delete requests must have the following syntax: `DELETE <KEY>`"
 	}
 
 	if operation == "put" && len(parts) != 3 {
-		return "", fmt.Errorf("invalid command: put requests must have the following syntax: `PUT <KEY> <VALUE>`")
+		return "invalid command: put requests must have the following syntax: `PUT <KEY> <VALUE>`"
 	}
 
 	if operation == "list" && len(parts) != 1 {
-		return "", fmt.Errorf("invalid command: list requests must have the following syntax: `LIST`")
+		return "invalid command: list requests must have the following syntax: `LIST`"
 	}
 
 	switch operation {
@@ -57,23 +57,42 @@ func (controller *Controller) HandleRequest(request string) (string, error) {
 	case "list":
 		return controller.HandleList()
 	default:
+		return "invalid command: only GET, PUT, DELETE and LIST operations are supported"
+	}
+}
+
+func (controller *Controller) HandleGet(key string) string {
+	value, err := controller.service.Get(key)
+	if err != nil {
+		return "Error: " + err.Error()
 	}
 
-	return "", fmt.Errorf("invalid command: only GET, PUT, DELETE and LIST operations are supported")
+	return value
 }
 
-func (controller *Controller) HandleGet(key string) (string, error) {
-	panic("not implemented") // TODO: Implement
+func (controller *Controller) HandlePut(key string, value string) string {
+	err := controller.service.Put(key, value)
+	if err != nil {
+		return "Error: " + err.Error()
+	}
+
+	return fmt.Sprintf("Successfully assigned key '%v' to value '%v", key, value)
 }
 
-func (controller *Controller) HandlePut(key string, value string) (string, error) {
-	panic("not implemented") // TODO: Implement
+func (controller *Controller) HandleDelete(key string) string {
+	err := controller.service.Delete(key)
+	if err != nil {
+		return "Error: " + err.Error()
+	}
+
+	return fmt.Sprintf("Successfully removed entry with key '%v'", key)
 }
 
-func (controller *Controller) HandleDelete(key string) (string, error) {
-	panic("not implemented") // TODO: Implement
-}
+func (controller *Controller) HandleList() string {
+	res, err := controller.service.List()
+	if err != nil {
+		return "Error: " + err.Error()
+	}
 
-func (controller *Controller) HandleList() (string, error) {
-	panic("not implemented") // TODO: Implement
+	return fmt.Sprintf("List: %v", res)
 }

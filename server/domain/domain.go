@@ -1,5 +1,9 @@
 package domain
 
+type IDomainError interface {
+	error
+}
+
 type DomainError struct {
 	message string
 }
@@ -13,16 +17,16 @@ func NewDomainError(message string) DomainError {
 }
 
 type IService interface {
-	Get(key string) DomainError
-	Put(key string, value string) DomainError
-	Delete(key string) DomainError
-	List() DomainError
+	Get(key string) (string, IDomainError)
+	Put(key string, value string) IDomainError
+	Delete(key string) IDomainError
+	List() ([]string, IDomainError)
 }
 
 type IController interface {
-	HandleRequest(request string) (string, error)
-	HandleGet(key string) (string, error)
-	HandlePut(key string, value string) (string, error)
-	HandleDelete(key string) (string, error)
-	HandleList() (string, error)
+	HandleRequest(request string) string
+	HandleGet(key string) string
+	HandlePut(key string, value string) string
+	HandleDelete(key string) string
+	HandleList() string
 }

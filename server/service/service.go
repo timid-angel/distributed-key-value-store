@@ -42,6 +42,10 @@ func (service *Service) Put(key string, value string) domain.IDomainError {
 }
 
 func (service *Service) Delete(key string) domain.IDomainError {
+	if _, err := service.Get(key); err != nil {
+		return domain.NewDomainError("failed to delete entry: key does not exist")
+	}
+
 	err := service.session.Query(fmt.Sprintf("DELETE FROM %v.store WHERE KEY = ?", service.keyspace), key).Exec()
 	if err != nil {
 		return domain.NewDomainError(fmt.Sprintf("failed to delete entry with key '%v': %v", key, err))

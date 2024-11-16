@@ -21,6 +21,7 @@ services:
     environment:
       - PORT=8080
       - DB_ADDRESS=cassandra:9042
+      - KEYSPACE=key_value_store
 
 volumes:
   cassandra-node:

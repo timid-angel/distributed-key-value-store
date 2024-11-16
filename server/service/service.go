@@ -26,14 +26,14 @@ func (service *Service) Get(key string) (string, domain.IDomainError) {
 			return "", domain.NewDomainError(fmt.Sprintf("failed to GET key '%v': key not found", key))
 		}
 
-		return "", domain.NewDomainError(fmt.Sprintf("failed to GET key '%v': %v", key, err))
+		return "", domain.NewDomainError(fmt.Sprintf("failed to GET key '%v': %v'", key, err))
 	}
 
 	return value, nil
 }
 
 func (service *Service) Put(key string, value string) domain.IDomainError {
-	err := service.session.Query(fmt.Sprintf("INSERT INTO %v (key, value) VALUES (?, ?)", service.keyspace), key, value)
+	err := service.session.Query(fmt.Sprintf("INSERT INTO %v.store (key, value) VALUES (?, ?)", service.keyspace), key, value).Exec()
 	if err != nil {
 		return domain.NewDomainError(fmt.Sprintf("failed to PUT '%v' to '%v': %v", key, value, err))
 	}
@@ -42,7 +42,7 @@ func (service *Service) Put(key string, value string) domain.IDomainError {
 }
 
 func (service *Service) Delete(key string) domain.IDomainError {
-	err := service.session.Query(fmt.Sprintf("DELETE FROM %v.store WHERE KEY = ?", service.keyspace), key)
+	err := service.session.Query(fmt.Sprintf("DELETE FROM %v.store WHERE KEY = ?", service.keyspace), key).Exec()
 	if err != nil {
 		return domain.NewDomainError(fmt.Sprintf("failed to delete entry with key '%v': %v", key, err))
 	}

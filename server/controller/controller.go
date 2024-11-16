@@ -21,7 +21,15 @@ func (controller *Controller) HandleRequest(request string) string {
 		return "invalid command: only GET, PUT, DELETE and LIST operations are supported"
 	}
 
-	parts := strings.Split(request, " ")
+	divParts := strings.Split(request, " ")
+	parts := []string{}
+	for _, v := range divParts {
+		v = strings.TrimSpace(v)
+		if v != "" && v != " " {
+			parts = append(parts, v)
+		}
+	}
+
 	if len(parts) == 0 {
 		return "invalid command: only GET, PUT, DELETE and LIST operations are supported"
 	}
@@ -94,5 +102,10 @@ func (controller *Controller) HandleList() string {
 		return "Error: " + err.Error()
 	}
 
-	return fmt.Sprintf("List: %v", res)
+	result := ""
+	for k, v := range res {
+		result += fmt.Sprintf("%v: %v; ", k, v)
+	}
+
+	return fmt.Sprintf("List: %v", result)
 }

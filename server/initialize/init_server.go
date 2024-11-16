@@ -12,6 +12,7 @@ import (
 
 var clients = make(map[net.Conn]bool)
 var mu sync.Mutex
+var DEADLINE = 100
 
 func removeClient(conn net.Conn) {
 	mu.Lock()
@@ -21,8 +22,7 @@ func removeClient(conn net.Conn) {
 }
 
 func handleClient(conn net.Conn, controller domain.IController) {
-	deadlineSeconds := 3
-	err := conn.SetDeadline(time.Now().Add(time.Second * time.Duration(deadlineSeconds)))
+	err := conn.SetDeadline(time.Now().Add(time.Second * time.Duration(DEADLINE)))
 	if err != nil {
 		log.Println("failed to set connection deadline:", err)
 		removeClient(conn)
@@ -31,7 +31,7 @@ func handleClient(conn net.Conn, controller domain.IController) {
 
 	reader := bufio.NewReader(conn)
 	for {
-		connErr := conn.SetDeadline(time.Now().Add(time.Second * time.Duration(deadlineSeconds)))
+		connErr := conn.SetDeadline(time.Now().Add(time.Second * time.Duration(DEADLINE)))
 		if connErr != nil {
 			log.Println("failed to set connection deadline:", connErr)
 			removeClient(conn)
@@ -46,6 +46,7 @@ func handleClient(conn net.Conn, controller domain.IController) {
 		}
 
 		response := controller.HandleRequest(message)
+		response += "\n"
 		conn.Write([]byte(response))
 	}
 }

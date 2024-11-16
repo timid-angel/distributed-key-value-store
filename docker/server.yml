@@ -1,0 +1,26 @@
+services:
+  cassandra:
+    image: "cassandra:latest"
+    container_name: "cassandra-1"
+    ports:
+      - 9042:9042
+    volumes:
+      - cassandra-node:/var/lib/cassandra:rw
+    restart:
+      on-failure
+    
+  server:
+    build:
+      context: ../
+      dockerfile: ./docker/server.dockerfile
+    depends_on:
+      - cassandra
+    command: ["bash ./wait-for-it.sh cassandra:9042 --strict --timeout=300 && ./runner"]
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - DB_ADDRESS=cassandra:9042
+
+volumes:
+  cassandra-node:

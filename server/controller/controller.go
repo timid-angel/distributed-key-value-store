@@ -84,7 +84,7 @@ func (controller *Controller) HandlePut(key string, value string) string {
 		return "Error: " + err.Error()
 	}
 
-	return fmt.Sprintf("Successfully assigned key '%v' to value '%v", key, value)
+	return fmt.Sprintf("Successfully assigned key '%v' to value '%v'", key, value)
 }
 
 func (controller *Controller) HandleDelete(key string) string {
@@ -104,8 +104,8 @@ func (controller *Controller) HandleList() string {
 
 	result := ""
 	for k, v := range res {
-		result += fmt.Sprintf("%v: %v; ", k, v)
+		result += fmt.Sprintf("(%v : %v); ", k, v)
 	}
 
-	return fmt.Sprintf("List: %v", result)
+	return fmt.Sprintf("%v", result)
 }

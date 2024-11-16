@@ -19,8 +19,8 @@ func setupDatabase(session *gocql.Session, keyspace string) {
 	}
 }
 
-func InitCassandraDB(keyspace string) *gocql.Session {
-	cluster := gocql.NewCluster("localhost:9042")
+func InitCassandraDB(keyspace string, db_address string) *gocql.Session {
+	cluster := gocql.NewCluster(db_address)
 	session, err := cluster.CreateSession()
 	if err != nil {
 		log.Fatalln("unable to connect to cassandra db:", err)

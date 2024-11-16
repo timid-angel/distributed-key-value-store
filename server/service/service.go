@@ -26,7 +26,7 @@ func (service *Service) Get(key string) (string, domain.IDomainError) {
 			return "", domain.NewDomainError(fmt.Sprintf("failed to GET key '%v': key not found", key))
 		}
 
-		return "", domain.NewDomainError(fmt.Sprintf("failed to GET key '%v': %v'", key, err))
+		return "", domain.NewDomainError(fmt.Sprintf("failed to GET key '%v': '%v'", key, err))
 	}
 
 	return value, nil

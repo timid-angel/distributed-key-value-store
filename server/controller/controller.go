@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"slices"
 	"strings"
+	"sync"
 )
 
 type Controller struct {
 	service domain.IService
+	mu      sync.Mutex
 }
 
 func NewController(service domain.IService) domain.IController {
@@ -55,6 +57,8 @@ func (controller *Controller) HandleRequest(request string) string {
 		return "invalid command: list requests must have the following syntax: `LIST`"
 	}
 
+	controller.mu.Lock()
+	defer controller.mu.Unlock()
 	switch operation {
 	case "get":
 		return controller.HandleGet(parts[1])

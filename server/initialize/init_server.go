@@ -41,7 +41,7 @@ func handleClient(conn net.Conn, controller domain.IController) {
 		message, err := reader.ReadString('\n')
 		if err != nil {
 			fmt.Println("client disconnected:", err)
-			conn.Close()
+			removeClient(conn)
 			return
 		}
 
